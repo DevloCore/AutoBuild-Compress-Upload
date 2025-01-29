@@ -13,12 +13,12 @@
 6. Run "RUN_PACK.cmd"
 7. You will get the final link in the console. The result file can be downloaded by anyone.
 
-## Project structure
+## Project structure you must have
 ```
 .
 └── YourOwnProject
     ├── YourOutputBuildFolder
-    └── WindowsGoogleBuildTransport
+    └── WindowsGoogleBuildTransport *(clone of this repo)*
         ├── .env
         ├── creds.json
         └── RUN_PACK.cmd
