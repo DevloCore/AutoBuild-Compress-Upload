@@ -50,9 +50,17 @@ async function PackBuild() {
   
     archive.pipe(output);
   
-    // Create the Software folder in the archive
-    archive.directory('../' + process.env.IN_BUILD_FOLDER_NAME, process.env.OUT_PARENT_FOLDER_NAME);
-  
+    // // Create the Software folder in the archive
+    // archive.directory('../' + process.env.IN_BUILD_FOLDER_NAME, process.env.OUT_PARENT_FOLDER_NAME);
+
+    // Récupérer les exclusions depuis .env et les transformer en tableau
+    const exclusions = process.env.EXCLUSIONS ? process.env.EXCLUSIONS.split('|').map(pattern => `**/${pattern}/**`) : [];
+
+    archive.glob("**/*", {
+      cwd: path.join(__dirname, "../" + process.env.IN_BUILD_FOLDER_NAME),
+      ignore: exclusions, // Exclusions dynamiques
+    }, { prefix: process.env.OUT_PARENT_FOLDER_NAME });
+
     archive.finalize();
   });
 }
