@@ -14,7 +14,7 @@ async function uploadToDrive(filePath, fileName) {
       fields: "files(id, name, mimeType, webViewLink)",
     });
 
-    // DELETE SAME NAME FILE ON DRIVE //
+    //DELETE SAME NAME FILE ON DRIVE 
     let file = files.data.files.find(f => f.name === process.env.FILE_NAME);
     if(file) {
       console.log("Found a previous file with the same name. Deleting it...");
