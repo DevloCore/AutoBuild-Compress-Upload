@@ -1,4 +1,4 @@
-# Windows Google Build Transport
+# Auto Build Compress-Upload
 
 ## What is it ?
 The goal of this small project is to automate compressing and uploading a build of your software/game to Google Drive.\
