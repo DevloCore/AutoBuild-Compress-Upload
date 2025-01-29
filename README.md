@@ -27,7 +27,7 @@ Type one command, and get a direct download link. That's it.
 .
 └── YourOwnProject
     ├── YourOutputBuildFolder
-    └── WindowsGoogleBuildTransport *(clone of this repo)*
+    └── AutoBuild-Compress-Upload *(clone of this repo)*
         ├── .env
         ├── creds.json
         └── RUN_PACK.cmd
