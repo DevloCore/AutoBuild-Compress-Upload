@@ -1,0 +1,8 @@
+node_modules
+# Keep environment variables out of version control
+.env
+certificates
+*.pem
+run.sh
+restart.sh
+creds.json
