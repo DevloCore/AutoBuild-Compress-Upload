@@ -118,7 +118,8 @@ async function Work() {
 
   console.log("\n- Result -");
   const publicUrl = `https://drive.google.com/file/d/${resultFileId}/view?usp=sharing`;
-  const directDownloadUrl = `https://drive.google.com/uc?export=download&confirm=t&id=${resultFileId}`;
+  // const directDownloadUrl = `https://drive.google.com/uc?export=download&confirm=t&id=${resultFileId}`;
+  const directDownloadUrl = `https://drive.usercontent.google.com/download?id=${resultFileId}&export=download&confirm=t`;
   console.log(`Public URL: ${publicUrl}`);
   console.log(`Direct download URL: ${directDownloadUrl}`);
 
