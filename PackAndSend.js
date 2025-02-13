@@ -3,34 +3,34 @@ const path = require("path");
 const GetDriveService = require("./GetDriveService");
 const { config } = require("dotenv");
 const archiver = require("archiver");
+const Platform = require("./Platform");
 
 config();
 
 const driveService = GetDriveService;
 
-// function copyFolder(src, dest) {
-//   try {
-//     const entries = fs.readdirSync(src, { withFileTypes: true });
+module.exports = async function Work(platform) {
+  console.log("WORKING WITH: " + platform);
 
-//     // Create the destination folder if it doesn't exist
-//     fs.mkdirSync(dest, { recursive: true });
+  console.log("- Packing software -");
+  const packFilePath = await PackBuild(platform);
 
-//     for (let entry of entries) {
-//       const srcPath = path.join(src, entry.name);
-//       const destPath = path.join(dest, entry.name);
+  console.log("\n- Working with Google Drive API -");
+  const parsed = path.parse(process.env.OUT_DRIVE_FILE_NAME);
 
-//       if (entry.isDirectory()) {
-//         copyFolder(srcPath, destPath);
-//       } else {
-//         fs.copyFileSync(srcPath, destPath);
-//       }
-//     }
-//   } catch (err) {
-//     console.error('Error copying folder:', err);
-//   }
-// }
+  const resultFileId = await uploadToDrive(packFilePath, parsed.name + "_" + platform + parsed.ext);
 
-async function PackBuild() {
+  console.log("\n- Result -");
+  const publicUrl = `https://drive.google.com/file/d/${resultFileId}/view?usp=sharing`;
+  const directDownloadUrl = `https://drive.usercontent.google.com/download?id=${resultFileId}&export=download&confirm=t`;
+  console.log(`Public URL: ${publicUrl}`);
+  console.log(`Direct download URL: ${directDownloadUrl}`);
+
+  console.log("\n- Cleaning up -");
+  fs.unlinkSync(packFilePath);
+}
+
+async function PackBuild(platform) {
   return new Promise((resolve, reject) => {
     const packFileName = "PackFile.zip";
 
@@ -49,15 +49,25 @@ async function PackBuild() {
     });
   
     archive.pipe(output);
-  
-    // // Create the Software folder in the archive
-    // archive.directory('../' + process.env.IN_BUILD_FOLDER_NAME, process.env.OUT_PARENT_FOLDER_NAME);
 
     // Récupérer les exclusions depuis .env et les transformer en tableau
     const exclusions = process.env.EXCLUSIONS ? process.env.EXCLUSIONS.split('|').map(pattern => `**/${pattern}/**`) : [];
 
+    let envVarName;
+
+    switch (platform) {
+      case Platform.windows:
+        envVarName = "IN_WINDOWS_BUILD_FOLDER_NAME";
+        break;
+      case Platform.linux:
+        envVarName = "IN_LINUX_BUILD_FOLDER_NAME";
+        break;
+      default:
+        console.log("Invalid platform.");
+    }
+
     archive.glob("**/*", {
-      cwd: path.join(__dirname, "../" + process.env.IN_BUILD_FOLDER_NAME),
+      cwd: path.join(__dirname, "../" + process.env[envVarName]), // Dossier à compresser
       ignore: exclusions, // Exclusions dynamiques
     }, { prefix: process.env.OUT_PARENT_FOLDER_NAME });
 
@@ -108,23 +118,3 @@ async function uploadToDrive(filePath, fileName) {
     console.error("Error uploading file:", error.message);
   }
 }
-
-async function Work() {
-  console.log("- Packing software -");
-  const packFilePath = await PackBuild();
-
-  console.log("\n- Working with Google Drive API -");
-  const resultFileId = await uploadToDrive(packFilePath, process.env.OUT_DRIVE_FILE_NAME);
-
-  console.log("\n- Result -");
-  const publicUrl = `https://drive.google.com/file/d/${resultFileId}/view?usp=sharing`;
-  // const directDownloadUrl = `https://drive.google.com/uc?export=download&confirm=t&id=${resultFileId}`;
-  const directDownloadUrl = `https://drive.usercontent.google.com/download?id=${resultFileId}&export=download&confirm=t`;
-  console.log(`Public URL: ${publicUrl}`);
-  console.log(`Direct download URL: ${directDownloadUrl}`);
-
-  console.log("\n- Cleaning up -");
-  fs.unlinkSync(packFilePath);
-}
-
-Work();

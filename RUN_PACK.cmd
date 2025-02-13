@@ -1,3 +1,3 @@
 @echo off
-node ./PackAndSend.js
+node ./index.js
 pause
